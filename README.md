@@ -12,35 +12,20 @@ python3 -m venv env
 
 ```
 source env/bin/activate
+sudo apt install python3-venv
+pip install wheel
+pip install psycopg2-binary
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
 ```
 
-## Connect to server
-
-You can configure your ~/.ssh/config to connect easily
-
-```
-Host dhis2-server
-  Hostname <IP_ADDRESS>
-  user <USERNAME>
-  IdentityFile <PEM_FILE>
-  Port 22
-
-```
-
-Connect to the server using: 
-
-```
-ssh dhis2-server
-```
 
 ## Set up POSTGRESQL
 
 From the server, you will run the follow command to install and configure postgresql.
 
 ```
-ansible-playbook -i <INVENTORY> playbooks/docker/dhis2/postgres/postgresql.yml 
+ansible-playbook playbooks/docker/dhis2/postgres/postgresql.yml 
 ```
 
 ## Restore DB
@@ -50,10 +35,8 @@ Then we will provide you with a presigned S3 URL to upload the dump.
 And you can follow these steps to restore the dump.
 
 ```
-ssh dhis2-server
-sudo su - postgres
 curl 'S3_URL' -o <BUCKET_NAME>.dump.gz
-unzip <BUCKET_NAME>.dump.gz
+gzip -d <BUCKET_NAME>.dump.gz
 
 ```
 
@@ -76,7 +59,7 @@ pg_restore \
 From the server, you will run the follow command to install DHIS2.
 
 ```
-ansible-playbook -i <INVENTORY> playbooks/dhis2.yml
+ansible-playbook playbooks/dhis2.yml
 ```
 
 Checking the status and logs
@@ -84,35 +67,4 @@ Checking the status and logs
 ```
 systemctl status dhis2 
 journalctl -u dhis2
-```
-
-## Restore in local dhis2 data from s3
-
-## Inventory template 
-
-You must provide a file to store your inventory.
-
-In this inventory, provide values of all environment variables defined into `.env` file.
-
-Here is an example of template:
-
-```
-all:
-  children:
-    dhis2:
-      hosts:
-        <IP_ADDRESS>:
-          TRAEFIK_PWD: <TRAEFIK_PWD>
-          TRAEFIK_USER: <TRAEFIK_PWD>
-          ansible_ssh_private_key_file: <PEM_FILE>
-          ansible_user: <USERNAME>
-          DOMAIN_NAME: <URL>
-          ACME_EMAIL: <EMAIL>
-          TRAEFIK_VERSION: <v2.4>
-          dhis_db_user: <dhis2>
-          dhis_db_password: <XXXXXX>
-          dhis_db_name: <dhis2_db>
-          config_system_locale: <en_US.UTF-8>
-        
-    ungrouped: {}
 ```

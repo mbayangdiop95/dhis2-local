@@ -50,7 +50,6 @@
         - postgresql-12
         - libpq-dev
         - python3-psycopg2
-        - psycopg2-binary
         - postgresql-12-postgis-3  
  
   tasks:
