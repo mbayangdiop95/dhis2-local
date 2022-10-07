@@ -2,9 +2,18 @@
 
 ## Local setup
 
+## Download repository
+
+```
+sudo -i
+git clone https://github.com/mbayangdiop95/dhis2-local.git
+cd dhis2-local
+```
+
 ### Create a venv in the directory
 
 ```
+apt install python3-venv
 python3 -m venv env
 ```
 
@@ -12,7 +21,6 @@ python3 -m venv env
 
 ```
 source env/bin/activate
-sudo apt install python3-venv
 pip install wheel
 pip install psycopg2-binary
 pip install -r requirements.txt
@@ -67,4 +75,31 @@ Checking the status and logs
 ```
 systemctl status dhis2 
 journalctl -u dhis2
+```
+
+## Upgrade DHIS2
+
+Check releases notes:
+
+```
+https://github.com/dhis2/dhis2-releases/tree/master/releases
+```
+
+Change DHIS2 version by modifying image from 2.35.14 to 2.36.12
+
+```
+nano playbooks/docker/dhis2/docker-compose.yml
+
+```
+
+Redeploy DHIS2
+
+```
+ansible-playbook playbooks/dhis2.yml
+```
+
+Restart DHIS2
+
+```
+systemctl restart dhis2
 ```
